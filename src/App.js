@@ -2,8 +2,10 @@
 import barger from './barger.avif'
 import Header from './components/Header'
 import SearchFood from './components/SearchFood'
-import MealList from './components/MealList'
+ import Footer from './components/Footer'
+
 function App() {
+
   return (
     <div className="bg-black h-screen">
       <Header/>
@@ -20,10 +22,13 @@ Direct, efficient, fully owned sales and engagement with customers across differ
       </div>
       </div>
   
-    
+     
                <SearchFood/>
-               <MealList/>
+       
+          <Footer/>
+ 
     </div>
+
   
   );
 }
