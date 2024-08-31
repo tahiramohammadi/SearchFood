@@ -12,10 +12,12 @@ const FoodSearch = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedMealId, setSelectedMealId] = useState(null);
 
+
   const openDialog = (mealId) => {
       setSelectedMealId(mealId);
       setIsDialogOpen(true);
   };
+
 
   const closeDialog = () => {
       setIsDialogOpen(false);
@@ -23,43 +25,42 @@ const FoodSearch = () => {
   };
 
 
+ 
 
     const fetchFoods = async () => {
  
       setError(null);
 
-      try{
-        const response = await axios.get(
-            `https://www.themealdb.com/api/json/v1/1/search.php?s=`
+      try {
+        const response = await axios.get('https://www.themealdb.com/api/json/v1/1/search.php', {
+            params: {
+                s: name// Include search query parameter
+            }
+        });
+        setMeals(response.data.meals || []);
+    } catch (error) {
+        console.error('Error fetching foods:', error);
+    }
 
-          );
-          const mealResults = response.data.meals;
-          if (mealResults) {
-            setMeals(mealResults);
-            setError(''); // Clear any previous error message
-          } else {
-            setMeals([]);
-            setError('Food not found'); // Set the error message when no meals are found
-          }
-        }catch (error) {
-          console.error('Error fetching the meals:', error);
-          setError('An error occurred while searching. Please try again later.');
-        }
     };
 
+
     useEffect(() => {
-      fetchFoods(); // This will run once when the component mounts
-    }, []);
+      if (name) {
+        fetchFoods();
+    } else {
+        setMeals([]); // Clear results if search query is empty
+    }
+
+    }, [name]);
 
 
 
-    const filteredMeals = meals?.filter((meal) =>
-    meal.strMeal.toLowerCase().includes(name.toLowerCase())
-  );
+
+  //   const filteredMeals = meals?.filter((meal) =>
+  //   meal.strMeal.toLowerCase().includes(name.toLowerCase())
+  // );
  
-   
-  
-
   
 
     return(
@@ -73,13 +74,10 @@ const FoodSearch = () => {
         <button className="text-yellow-500  p-4 rounded-r-lg  bg-gray-900" onClick={ fetchFoods}> Search</button>
      
         </div>
-    
-      
-      
 
        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 pt-12  ">
-        {filteredMeals && filteredMeals.length > 0 ? (
-          filteredMeals.map((meal) => (
+        {meals.length > 0 ? (
+          meals.map((meal) => (
           <div key={meal.idMeal} className="border rounded-lg overflow-hidden shadow-lg ">
             <img src={meal.strMealThumb} alt={meal.strMeal} className="w-full h-48 object-cover cursor-pointer"
             onClick={() => openDialog(meal.idMeal)}
@@ -96,11 +94,13 @@ const FoodSearch = () => {
       )}
       </div>
 
+
       <MealDialog
                 mealId={selectedMealId}
                 isOpen={isDialogOpen} // This should be a boolean, not a function
                 onClose={closeDialog}
             />
+            
           </div>
                 
 
